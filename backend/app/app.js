@@ -1,6 +1,8 @@
 // Module Import
 const express = require('express');
 const {error404, globalErrorHandler}  = require('./errorHandler')
+require('dotenv').config();
+
 
 // Initialization App
 const app = express();

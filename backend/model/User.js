@@ -1,6 +1,6 @@
 // Module Import
 const {model, Schema} = require('mongoose');
-
+const bcrypt = require('bcrypt');
 
 // Define Schema
 const userSchema = new Schema({
@@ -9,6 +9,7 @@ const userSchema = new Schema({
         required: [true, "Please enter a username"],
         trim: true,
         lowercase: true,
+        unique: true
     },
     fullName: {
         type: String,
@@ -30,17 +31,11 @@ const userSchema = new Schema({
     },
     phone: {
         type: String,
-        validate: {
-            validator: function(v){
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message : userphone => `${userphone.value} is not a valid phone number!`
-        },
         required: [true, "Please enter a phone number"]
     },
     password: {
         type: String,
-        maxLength: [6, "Password must be at least 6 characters"],
+        minLength: [6, "Password must be at least 6 characters"],
         required: [true, "Please enter a password"]
     },
     bio: {
@@ -56,6 +51,20 @@ const userSchema = new Schema({
 
 }, {
     timestamps: true
+})
+
+userSchema.pre("save", async function(next) {
+
+    if(!this.isModified("password")) {
+        return next();
+    }
+    
+    // Encrypt the password
+    const salt = await bcrypt.genSalt(10)
+    const encryptedPassword = await bcrypt.hash(this.password, salt)
+    this.password = encryptedPassword;
+
+    next()
 })
 
 // Model Creation

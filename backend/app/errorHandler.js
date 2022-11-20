@@ -1,3 +1,5 @@
+const e = require("express");
+
 // 404 Error Handlers
 const error404 = (req, res, next) => {
     const error = new Error("Resources Not Found!");
@@ -10,8 +12,7 @@ const globalErrorHandler = (err, req, res, next) => {
     if(err.status === 404){
         return res.status(404).json({message: err.message})
     }
-
-    res.status(500).json({message: err.message})
+    return res.status(500).json({message: err.message})
 }
 
 

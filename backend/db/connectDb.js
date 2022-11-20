@@ -1,6 +1,5 @@
 // Module Import
 const mongoose = require('mongoose')
-const createError  = require('../error/handleError')
 
 // Connect Db Function
 const connectDb = async (URL,message, cb) => {
@@ -9,7 +8,7 @@ const connectDb = async (URL,message, cb) => {
         console.log(message)
         cb();
     }catch(e){
-        throw createError("Database Connection Failed")
+        throw new Error("Database Connection Failed")
     }
 }
 
