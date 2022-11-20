@@ -1,7 +1,7 @@
 // Module Import
 const http = require('http');
 const app = require('./app/app');
-require('dotenv').config("./config/.env");
+require('dotenv').config();
 const connectDb = require('./db/connectDb')
 
 // Server configuration
