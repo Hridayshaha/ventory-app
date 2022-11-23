@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt")
 
 
 
-// All User Controllers
+// Register Controller
 const registerController = async (req, res, next) => {
     const {username, fullName, email, phone, password, bio, photo} = req.body;
     try{
@@ -46,7 +46,7 @@ const registerController = async (req, res, next) => {
                 httpOnly: true,
                 expires: new Date(Date.now() + 1000 * 86400),
                 sameSite: "none",
-                secure: true,
+                // secure: true,
             })
 
         
@@ -66,6 +66,7 @@ const registerController = async (req, res, next) => {
 }
 
 
+// Login Controller
 const loginController = async (req, res, next) => {
     try {
         const {email, password}  = req.body;
@@ -89,22 +90,15 @@ const loginController = async (req, res, next) => {
 
         // Generate Cookie - HTTP only
             res.cookie("token", token, {
-                path: "/",
+               path: "/",
                 httpOnly: true,
                 expires: new Date(Date.now() + 1000 * 86400),
-                sameSite: "none",
-                secure: true,
+               sameSite: "none",
+            //    secure: true,
             })
 
-       res.status(200).json({
-        _id: user._id,
-         username: user.username,
-         fullName: user.fullName,
-         email: user.email,
-         phone: user.phone,
-         bio: user.bio,
-         photo: user.photo,
-         token: token
+       return res.status(200).json({
+        message: "Logged in successfully"
      })
 
     }catch(e){
@@ -112,6 +106,8 @@ const loginController = async (req, res, next) => {
     }
 }
 
+
+// Logout Controller
 const logoutController = (req, res, next) => {
     try{
         res.cookie("token", "", {
@@ -119,12 +115,38 @@ const logoutController = (req, res, next) => {
             httpOnly: true,
             expires: new Date(0),
             sameSite: "none",
-            secure: true,
+            // secure: true,
         })
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "Logged Out Successfully"
         })
+
+        
+    }catch(e){
+        next(e)
+    }
+}
+
+
+// Get User Controller
+const getUserController = async (req, res, next) => {
+
+    try{
+        const user = await User.findById(req.user._id);
+        if(!user){
+            throw new Error("User not found");
+        }
+
+        return res.status(200).json({
+            _id: user._id,
+             username: user.username,
+             fullName: user.fullName,
+             email: user.email,
+             phone: user.phone,
+             bio: user.bio,
+             photo: user.photo,
+         })
 
     }catch(e){
         next(e)
@@ -135,5 +157,6 @@ const logoutController = (req, res, next) => {
 module.exports = {
     registerController, 
     loginController,
-    logoutController
+    logoutController,
+    getUserController
 }
